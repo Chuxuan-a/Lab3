@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-// TODO CheckStyle: Wrong lexicographical order for 'java.util.HashMap' import (remove this comment once resolved)
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,7 +14,12 @@ import java.util.Map;
  */
 public class CountryCodeConverter {
 
+    List<String> countryNames = new ArrayList<>();
+    List<String> countryCodes_A2 = new ArrayList<>();
+    List<String> countryCodes_A3 = new ArrayList<>();
+    List<String> countryCodes_num = new ArrayList<>();
     // TODO Task: pick appropriate instance variable(s) to store the data necessary for this class
+
 
     /**
      * Default constructor which will load the country codes from "country-codes.txt"
@@ -36,6 +41,28 @@ public class CountryCodeConverter {
                     .getClassLoader().getResource(filename).toURI()));
 
             // TODO Task: use lines to populate the instance variable(s)
+            for (int i = 1; i < lines.size(); i++) {
+                String line = lines.get(i);
+                String[] columns = line.trim().split("\\s+");
+                if (columns.length >= 4) {
+                    int len = columns.length;
+                    StringBuilder name = new StringBuilder();
+                    for (int j = 0; j < len - 3; j++) {
+                        if (j > 0) {name.append(" ");}
+                        name.append(columns[j]);
+                    }
+                    // TODO: delete the test lines
+                    countryNames.add(name.toString());
+                    System.out.println("Processing " + i + name.toString());
+                    countryCodes_A2.add(columns[len - 3]);
+                    System.out.println("Processing " + i + columns[len-3]);
+                    countryCodes_A3.add(columns[len - 2]);
+                    System.out.println("Processing " + i + columns[len-2]);
+                    countryCodes_num.add(columns[len - 1]);
+                    System.out.println("Processing " + i + columns[len-1]);
+                }
+            }
+
 
         }
         catch (IOException | URISyntaxException ex) {
@@ -51,7 +78,12 @@ public class CountryCodeConverter {
      */
     public String fromCountryCode(String code) {
         // TODO Task: update this code to use an instance variable to return the correct value
-        return code;
+        /* Note that our input is case-sensitive */
+        String uppercase = code.toUpperCase();
+        int index = countryCodes_A3.indexOf(uppercase);
+        /* note that .indexof returns -1 if it never occurs
+         */
+        return countryNames.get(index);
     }
 
     /**
@@ -61,7 +93,8 @@ public class CountryCodeConverter {
      */
     public String fromCountry(String country) {
         // TODO Task: update this code to use an instance variable to return the correct value
-        return country;
+        int index = countryNames.indexOf(country);
+        return countryCodes_A3.get(index);
     }
 
     /**
@@ -70,6 +103,6 @@ public class CountryCodeConverter {
      */
     public int getNumCountries() {
         // TODO Task: update this code to use an instance variable to return the correct value
-        return 0;
+        return countryNames.toArray().length;
     }
 }
