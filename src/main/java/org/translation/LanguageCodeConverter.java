@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,8 @@ import java.util.List;
  */
 public class LanguageCodeConverter {
 
-    // TODO Task: pick appropriate instance variables to store the data necessary for this class
+    private List<String> isoNames = new ArrayList<>();
+    private List<String> lanCode = new ArrayList<>();
 
     /**
      * Default constructor which will load the language codes from "language-codes.txt"
@@ -31,9 +33,12 @@ public class LanguageCodeConverter {
         try {
             List<String> lines = Files.readAllLines(Paths.get(getClass()
                     .getClassLoader().getResource(filename).toURI()));
-
-            // TODO Task: use lines to populate the instance variable
-            //           tip: you might find it convenient to create an iterator using lines.iterator()
+            for (int i = 1; i < lines.size(); i++) {
+                String line = lines.get(i);
+                String[] columns = line.split("\t");
+                isoNames.add(columns[0]);
+                lanCode.add(columns[1]);
+            }
         }
         catch (IOException | URISyntaxException ex) {
             throw new RuntimeException(ex);
@@ -47,8 +52,8 @@ public class LanguageCodeConverter {
      * @return the name of the language corresponding to the code
      */
     public String fromLanguageCode(String code) {
-        // TODO Task: update this code to use your instance variable to return the correct value
-        return code;
+        int index = lanCode.indexOf(code);
+        return isoNames.get(index);
     }
 
     /**
@@ -57,8 +62,8 @@ public class LanguageCodeConverter {
      * @return the 2-letter code of the language
      */
     public String fromLanguage(String language) {
-        // TODO Task: update this code to use your instance variable to return the correct value
-        return language;
+        int index = isoNames.indexOf(language);
+        return lanCode.get(index);
     }
 
     /**
@@ -66,7 +71,6 @@ public class LanguageCodeConverter {
      * @return how many languages are included in this code converter.
      */
     public int getNumLanguages() {
-        // TODO Task: update this code to use your instance variable to return the correct value
-        return 0;
+        return lanCode.size();
     }
 }

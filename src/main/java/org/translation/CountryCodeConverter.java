@@ -39,6 +39,8 @@ public class CountryCodeConverter {
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 String[] columns = line.trim().split("\\s+");
+
+                // using "\t" as delimiter would make life much easier, see LanguageCodeConverter.java
                 if (columns.length >= 4) {
                     int len = columns.length;
                     StringBuilder name = new StringBuilder();
@@ -72,11 +74,10 @@ public class CountryCodeConverter {
      * @return the name of the country corresponding to the code
      */
     public String fromCountryCode(String code) {
-        /* Note that our input is case-sensitive */
+        // Note that the input is case-sensitive
         String uppercase = code.toUpperCase();
         int index = countryCodesA3.indexOf(uppercase);
-        /* note that .indexof returns -1 if it never occurs
-         */
+        // note that .indexof returns -1 if it never occurs
         return countryNames.get(index);
     }
 

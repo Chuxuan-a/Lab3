@@ -5,9 +5,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * An implementation of the Translator interface which reads in the translation
@@ -15,11 +17,12 @@ import org.json.JSONArray;
  */
 public class JSONTranslator implements Translator {
 
-    // TODO Task: pick appropriate instance variables for this class
-
+    private HashMap<String, List<String>> countryToLanguages;
+    private HashMap<String, HashMap<String, String>> countryToTranslations;
     /**
      * Constructs a JSONTranslator using data from the sample.json resources file.
      */
+
     public JSONTranslator() {
         this("sample.json");
     }
@@ -31,15 +34,31 @@ public class JSONTranslator implements Translator {
      */
     public JSONTranslator(String filename) {
         // read the file to get the data to populate things...
+        countryToLanguages = new HashMap<>();
+        countryToTranslations = new HashMap<>();
+
         try {
 
             String jsonString = Files.readString(Paths.get(getClass().getClassLoader().getResource(filename).toURI()));
 
             JSONArray jsonArray = new JSONArray(jsonString);
 
-            // TODO Task: use the data in the jsonArray to populate your instance variables
-            //            Note: this will likely be one of the most substantial pieces of code you write in this lab.
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String countryCode = jsonObject.getString("alpha3");
 
+                List<String> languages = new ArrayList<>();
+                HashMap<String, String> translations = new HashMap<>();
+
+                for (String key : jsonObject.keySet()) {
+                    if (!"id".equals(key) && !"alpha2".equals(key) && !"alpha3".equals(key)) {
+                        languages.add(key);
+                        translations.put(key, jsonObject.getString(key));
+                    }
+                }
+                countryToLanguages.put(countryCode, languages);
+                countryToTranslations.put(countryCode, translations);
+            }
         }
         catch (IOException | URISyntaxException ex) {
             throw new RuntimeException(ex);
@@ -48,21 +67,34 @@ public class JSONTranslator implements Translator {
 
     @Override
     public List<String> getCountryLanguages(String country) {
-        // TODO Task: return an appropriate list of language codes,
-        //            but make sure there is no aliasing to a mutable object
-        return new ArrayList<>();
+        List<String> languages = countryToLanguages.get(country);
+        if (languages == null) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(languages);
+        // Since we're only asked to make sure there is no aliasing to a **mutable** object,
+        // so a shallow copy would suffice.
     }
 
     @Override
     public List<String> getCountries() {
-        // TODO Task: return an appropriate list of country codes,
-        //            but make sure there is no aliasing to a mutable object
-        return new ArrayList<>();
+        List<String> countries = new ArrayList<>();
+        for (HashMap.Entry<String, List<String>> entry : countryToLanguages.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                countries.add(entry.getKey());
+            }
+        }
+        return countries;
     }
 
     @Override
     public String translate(String country, String language) {
-        // TODO Task: complete this method using your instance variables as needed
+        HashMap<String, String> translations = countryToTranslations.get(country);
+        if (translations != null) {
+            return translations.get(language);
+            // to avoid null pointer
+        }
         return null;
     }
 }
+        // Note that this will return null if there is no translation
