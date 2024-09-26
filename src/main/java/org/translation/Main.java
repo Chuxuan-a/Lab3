@@ -80,7 +80,7 @@ public class Main {
         for (String countryName : countryNames) {
             System.out.println(countryName);
         }
-        System.out.println(countries);
+        // System.out.println(countries);
 
         System.out.println("select a country from above:");
 
