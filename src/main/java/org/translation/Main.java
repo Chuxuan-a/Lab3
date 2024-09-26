@@ -80,6 +80,7 @@ public class Main {
         for (String countryName : countryNames) {
             System.out.println(countryName);
         }
+        System.out.println(countries);
 
         System.out.println("select a country from above:");
 
@@ -91,18 +92,18 @@ public class Main {
     // Note: CheckStyle is configured so that we don't need javadoc for private methods
     private static String promptForLanguage(Translator translator, String country) {
 
-        System.out.println(country);
+        // System.out.println(country);
 
         LanguageCodeConverter converter = new LanguageCodeConverter();
         List<String> languages = translator.getCountryLanguages(country);
-        System.out.println(languages);
+        // System.out.println(languages);
 
         List<String> languageNames = new ArrayList<>();
         for (String language : languages) {
             languageNames.add(converter.fromLanguageCode(language));
         }
         Collections.sort(languageNames);
-        System.out.println(languageNames);
+        // System.out.println(languageNames);
         for (String languageName : languageNames) {
             System.out.println(languageName);
         }
