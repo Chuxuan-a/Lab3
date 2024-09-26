@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,8 +18,8 @@ import org.json.JSONObject;
  */
 public class JSONTranslator implements Translator {
 
-    private HashMap<String, List<String>> countryToLanguages;
-    private HashMap<String, HashMap<String, String>> countryToTranslations;
+    private Map<String, List<String>> countryToLanguages;
+    private Map<String, Map<String, String>> countryToTranslations;
     /**
      * Constructs a JSONTranslator using data from the sample.json resources file.
      */
@@ -46,9 +47,10 @@ public class JSONTranslator implements Translator {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String countryCode = jsonObject.getString("alpha3");
+                // System.out.println("Processing country code: " + countryCode);
 
                 List<String> languages = new ArrayList<>();
-                HashMap<String, String> translations = new HashMap<>();
+                Map<String, String> translations = new HashMap<>();
 
                 for (String key : jsonObject.keySet()) {
                     if (!"id".equals(key) && !"alpha2".equals(key) && !"alpha3".equals(key)) {
@@ -58,6 +60,7 @@ public class JSONTranslator implements Translator {
                 }
                 countryToLanguages.put(countryCode, languages);
                 countryToTranslations.put(countryCode, translations);
+                // System.out.println("Added languages for country: " + countryCode + " -> " + languages);
             }
         }
         catch (IOException | URISyntaxException ex) {
@@ -67,7 +70,9 @@ public class JSONTranslator implements Translator {
 
     @Override
     public List<String> getCountryLanguages(String country) {
-        List<String> languages = countryToLanguages.get(country);
+        List<String> languages = countryToLanguages.get(country.toLowerCase());
+        // IMPORTANT: .get is case-sensitive
+        System.out.println(languages);
         if (languages == null) {
             return new ArrayList<>();
         }
@@ -79,7 +84,7 @@ public class JSONTranslator implements Translator {
     @Override
     public List<String> getCountries() {
         List<String> countries = new ArrayList<>();
-        for (HashMap.Entry<String, List<String>> entry : countryToLanguages.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : countryToLanguages.entrySet()) {
             if (!entry.getValue().isEmpty()) {
                 countries.add(entry.getKey());
             }
@@ -89,9 +94,9 @@ public class JSONTranslator implements Translator {
 
     @Override
     public String translate(String country, String language) {
-        HashMap<String, String> translations = countryToTranslations.get(country);
+        Map<String, String> translations = countryToTranslations.get(country.toLowerCase());
         if (translations != null) {
-            return translations.get(language);
+            return translations.get(language.toLowerCase());
             // to avoid null pointer
         }
         return null;

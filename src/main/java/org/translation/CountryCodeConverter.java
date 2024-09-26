@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class CountryCodeConverter {
 
+    private static final int NUM_OF_COLUMNS = 4;
     private List<String> countryNames = new ArrayList<>();
     private List<String> countryCodesA2 = new ArrayList<>();
     private List<String> countryCodesA3 = new ArrayList<>();
@@ -41,24 +42,19 @@ public class CountryCodeConverter {
                 String[] columns = line.trim().split("\\s+");
 
                 // using "\t" as delimiter would make life much easier, see LanguageCodeConverter.java
-                if (columns.length >= 4) {
+                if (columns.length >= NUM_OF_COLUMNS) {
                     int len = columns.length;
                     StringBuilder name = new StringBuilder();
-                    for (int j = 0; j < len - 3; j++) {
+                    for (int j = 0; j < len - (NUM_OF_COLUMNS - 1); j++) {
                         if (j > 0) {
                             name.append(" ");
                         }
                         name.append(columns[j]);
                     }
-                    // TODO: delete the test lines
                     countryNames.add(name.toString());
-                    System.out.println("Processing " + i + name.toString());
-                    countryCodesA2.add(columns[len - 3]);
-                    System.out.println("Processing " + i + columns[len - 3]);
+                    countryCodesA2.add(columns[len - (NUM_OF_COLUMNS - 1)]);
                     countryCodesA3.add(columns[len - 2]);
-                    System.out.println("Processing " + i + columns[len - 2]);
                     countryCodesNum.add(columns[len - 1]);
-                    System.out.println("Processing " + i + columns[len - 1]);
                 }
             }
         }
